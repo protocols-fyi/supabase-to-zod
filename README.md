@@ -8,6 +8,10 @@ Generate [Zod](https://github.com/colinhacks/zod) schemas (v3) from Typescript t
 [![Version](https://img.shields.io/npm/v/supabase-to-zod.svg)](https://npmjs.org/package/supabase-to-zod)
 [![License](https://img.shields.io/npm/l/supabase-to-zod.svg)](https://github.com/psteinroe/supabase-to-zod/blob/main/LICENSE)
 
+> [!NOTE]  
+> @dohoo forked this project and created SupaZod. It's a significant improvement, and I recommend trying it out instead: https://github.com/dohooo/supazod
+
+
 ## Usage
 
 ```sh

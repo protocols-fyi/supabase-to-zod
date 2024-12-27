@@ -37,6 +37,10 @@ export const supabaseToZodOptionsSchema = transformTypesOptionsSchema
     getSchemaName: getSchemaNameSchema.optional(),
     keepComments: z.boolean().optional().default(false),
     skipParseJSDoc: z.boolean().optional().default(false),
+    relationships: z.boolean().optional().default(false),
+    updates: z.boolean().optional().default(false),
+    inserts: z.boolean().optional().default(false),
+    deletes: z.boolean().optional().default(false),
   });
 
 export type SupabaseToZodOptions = z.infer<typeof supabaseToZodOptionsSchema>;

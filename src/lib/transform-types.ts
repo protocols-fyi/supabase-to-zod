@@ -23,14 +23,18 @@ export const transformTypesOptionsSchema = z.object({
   schema: z.string().default('public'),
   enumFormatter: enumFormatterSchema.default(() => (name: string) => name),
   compositeTypeFormatter: compositeTypeFormatterSchema.default(
-    () => (name: string) => name
+    () => (name: string) => name,
   ),
   functionFormatter: functionFormatterSchema.default(
-    () => (name: string, type: string) => `${name}${type}`
+    () => (name: string, type: string) => `${name}${type}`,
   ),
   tableOrViewFormatter: tableOrViewFormatterSchema.default(
-    () => (name: string, operation: string) => `${name}${operation}`
+    () => (name: string, operation: string) => `${name}${operation}`,
   ),
+  relationships: z.boolean().optional().default(false),
+  updates: z.boolean().optional().default(false),
+  inserts: z.boolean().optional().default(false),
+  deletes: z.boolean().optional().default(false),
 });
 
 export type TransformTypesOptions = z.infer<typeof transformTypesOptionsSchema>;
@@ -46,11 +50,15 @@ export const transformTypes = z
       enumFormatter,
       compositeTypeFormatter,
       functionFormatter,
+      relationships,
+      updates,
+      inserts,
+      deletes,
     } = opts;
     const sourceFile = ts.createSourceFile(
       'index.ts',
       opts.sourceText,
-      ts.ScriptTarget.Latest
+      ts.ScriptTarget.Latest,
     );
 
     const typeStrings: string[] = [];
@@ -79,6 +87,16 @@ export const transformTypes = z
                                   n.forEachChild((n) => {
                                     if (ts.isPropertySignature(n)) {
                                       const operation = getNodeName(n);
+                                      // Conditionally skip based on options
+                                      if (
+                                        (operation === 'Relationships' &&
+                                          !relationships) ||
+                                        (operation === 'Insert' && !inserts) ||
+                                        (operation === 'Update' && !updates) ||
+                                        (operation === 'Delete' && !deletes)
+                                      ) {
+                                        return;
+                                      }
                                       if (operation) {
                                         n.forEachChild((n) => {
                                           if (
@@ -230,11 +248,11 @@ export const transformTypes = z
     for (const { name, formattedName } of enumNames) {
       parsedTypes = parsedTypes.replaceAll(
         `Database["${schema}"]["Enums"]["${name}"]`,
-        formattedName
+        formattedName,
       );
       parsedTypes = parsedTypes.replaceAll(
         `Database['${schema}']['Enums']['${name}']`,
-        formattedName
+        formattedName,
       );
     }
 
